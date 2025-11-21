@@ -1,0 +1,163 @@
+// import { useState } from "react"
+// import { FaAngleDown, FaUser } from "react-icons/fa"
+// import { Link } from "react-router-dom"
+
+
+// const Header = () => {
+//     const [menuopen, setMenuOpen] = useState(false);
+//     return (
+//         <div>
+//             <header className="bg-(--main) w-full p-8 py-3 font-semibold text-2xl flex justify-between">
+//                 <Link to="/">
+//                     <div className="text-white">DKC</div>
+//                 </Link>
+//                 <div className="text-white">
+//                     <div className="flex items-center text-xl text-white relative">
+//                         <div className="relative">
+//                             <button className="flex items-center gap-2 px-0 py-2 rounded-xl  transition"
+//                                 onClick={() => setMenuOpen(!menuopen)}>
+//                                 <FaUser />
+//                                 <FaAngleDown className={`transition-transform ${menuopen ? "rotate-180" : ""}`} />
+
+//                             </button>
+
+//                             {menuopen && (
+
+//                                 <div className="absolute lg:right-0 -right-6 w-56 rounded-xl border shadow-xl overflow-hidden z-50 bg-(--primary) transition-all duration-300">
+
+//                                     <div className="bg-(--primary)">
+//                                         <Link
+//                                             to=""
+//                                             className="block px-4 py-3 text-lg text-black  border-b-gray-400 hover:bg-gray-100"
+//                                         >
+//                                             Profile
+//                                         </Link>
+//                                         <div className="p-2.5">
+//                                             <Link
+//                                                 to="/order"
+//                                                 className="block px-4 py-3 text-lg text-(--main)  border-b-gray-400"
+//                                             >
+//                                                 Orders
+//                                             </Link>
+//                                             <Link
+//                                                 to="/activities"
+//                                                 className="block px-4 py-3 text-lg text-(--main)  border-b-gray-400"
+//                                             >
+//                                                 Activites
+//                                             </Link>
+//                                             <Link
+//                                                 to="/request"
+//                                                 className="block px-4 py-3 text-lg text-(--main)  border-b-gray-400"
+//                                             >
+//                                                 Request Inventory
+//                                             </Link>
+//                                             <Link
+//                                                 to="/setting"
+//                                                 className="block px-4 py-3 text-lg text-(--main)  border-b-gray-400"
+//                                             >
+//                                                 Settings
+//                                             </Link>
+//                                             <Link to="/lock" className="block px-4 py-1.5 text-lg  text-(--main) border-b-gray-400">
+//                                                 Close shop
+//                                             </Link>
+//                                             <Link to="/hold-order" className="block px-4 py-1.5 text-lg text-(--main) border-b-gray-400">
+//                                                 Hold Order
+//                                             </Link>
+//                                         </div>
+//                                         <div />
+//                                     </div>
+//                                 </div>
+//                             )}
+//                         </div>
+//                     </div>
+//                 </div>
+//             </header>
+//         </div>
+//     );
+// };
+
+// export default Header
+
+
+
+import { useState } from "react";
+import { FaAngleDown, FaUser } from "react-icons/fa";
+import { Link } from "react-router-dom";
+
+const Header = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  return (
+    <header className="bg-black w-full py-4 px-8 flex justify-between items-center shadow-lg">
+      <Link to="/">
+        <div className="text-white font-bold text-3xl tracking-wide">DKC</div>
+      </Link>
+
+      <div className="relative">
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="flex items-center gap-2 text-white text-lg hover:opacity-70 transition"
+        >
+          <FaUser className="text-xl" />
+          <FaAngleDown
+            className={`transition-transform duration-300 ${
+              menuOpen ? "rotate-180" : ""
+            }`}
+          />
+        </button>
+
+        {menuOpen && (
+          <div className="absolute right-0 mt-3 w-56 bg-white rounded-xl shadow-2xl overflow-hidden z-50 animate-fadeIn">
+            <Link
+              to="/profile"
+              className="block px-4 py-3 text-lg text-gray-700 hover:bg-gray-100 border-b"
+            >
+              Profile
+            </Link>
+
+            <div className="p-2">
+              <Link
+                to="/order"
+                className="block px-4 py-3 text-lg text-blue-600 hover:bg-gray-100 border-b"
+              >
+                Orders
+              </Link>
+              <Link
+                to="/activities"
+                className="block px-4 py-3 text-lg text-blue-600 hover:bg-gray-100 border-b"
+              >
+                Activities
+              </Link>
+              <Link
+                to="/request"
+                className="block px-4 py-3 text-lg text-blue-600 hover:bg-gray-100 border-b"
+              >
+                Request Inventory
+              </Link>
+              <Link
+                to="/setting"
+                className="block px-4 py-3 text-lg text-blue-600 hover:bg-gray-100 border-b"
+              >
+                Settings
+              </Link>
+              <Link
+                to="/lock"
+                className="block px-4 py-3 text-lg text-blue-600 hover:bg-gray-100 border-b"
+              >
+                Close Shop
+              </Link>
+              <Link
+                to="/hold-order"
+                className="block px-4 py-3 text-lg text-blue-600 hover:bg-gray-100"
+              >
+                Hold Order
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+    </header>
+  );
+};
+
+export default Header;

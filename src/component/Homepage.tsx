@@ -16,7 +16,7 @@ const HomePage = () => {
     }
   }, [])
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-black via-teal-700 to-white">
+    <div className="min-h-screen flex flex-col from-black via-teal-700 to-white">
       <header className="w-full flex justify-between items-center px-6 py-4 bg-black/80 shadow-lg">
         <div className="text-white text-2xl font-bold cursor-pointer">SK</div>
           <div className="flex items-center text-xl text-white relative">
