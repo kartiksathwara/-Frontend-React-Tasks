@@ -34,7 +34,7 @@ const HomePage = () => {
                       onClick={() => {
                         localStorage.removeItem("user");
                         localStorage.removeItem("token");
-                        window.location.href = "/login";
+                        window.location.href = "/";
                       }}
                       className="w-full text-left px-4 py-2 font-semibold">
                       LogOut

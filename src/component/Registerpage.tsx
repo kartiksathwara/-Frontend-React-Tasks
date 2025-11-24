@@ -1,34 +1,63 @@
-import React, { useState } from 'react'
-import { IoEye, IoEyeOff } from 'react-icons/io5';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { IoEye, IoEyeOff } from "react-icons/io5";
+import { useNavigate } from "react-router-dom";
 
-interface FormData {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
-const Registerpage: React.FC = () => {
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [formData, setFormData] = useState<FormData>({
+const Register = () => {
+  const navigate = useNavigate();
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
   });
 
-  const navigate = useNavigate();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" });
+  };
+
+  const validate = () => {
+    let isValid = true;
+    let newErrors = { email: "", password: "", confirmPassword: "" };
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      newErrors.email = "Enter a valid email address";
+      isValid = false;
+    }
+
+    const strongPassword =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{5,}$/;
+
+    if (!strongPassword.test(formData.password)) {
+      newErrors.password =
+        "Password must include uppercase, lowercase, number, special character & min 8 characters";
+      isValid = false;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match!";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
 
-      return;
-    }
+    if (!validate()) return;
+
     try {
       const response = await fetch("http://localhost:5000/api/register", {
         method: "POST",
@@ -39,64 +68,134 @@ const Registerpage: React.FC = () => {
       });
 
       const result = await response.json();
-      console.log(result);
 
       if (response.ok) {
         navigate("/login");
       } else {
         alert(result.message || "Registration failed");
       }
-    } catch (error) {
-      console.log(error)
+    } catch (err) {
+      console.log(err);
+      alert("Something went wrong!");
     }
+  };
 
-  }
   return (
-    <div className="flex justify-center items-center h-screen  from-black via-teal-700 to-white">
-      <form className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-sm text-center space-y-4" onSubmit={handleSubmit}>
-        <h2 className="text-4xl font-extrabold text-gray-900 mb-4">Register</h2>
-        <input type="text" name="name" placeholder="Enter Name" className="w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:border-teal-500 transition" value={formData.name} onChange={handleChange} required />
-        <input type="text" name="email" placeholder="Enter EmailId" className="w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:border-teal-500 transition" value={formData.email} onChange={handleChange} required />
-        <div className='relative'>
-          <input type={showPassword ? "text" : "password"} name="password" placeholder="Enter Password" className="w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:border-teal-500 transition" value={formData.password} onChange={handleChange} required />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-            aria-label="Toggle password visibility"
-          >
-            {showPassword ? <IoEye size={20} /> : <IoEyeOff size={20} />}
-          </button>
-        </div>
-        <div className='relative'>
-          <input type={showConfirmPassword ? "text" : "password"} name="confirmPassword" placeholder="Enter ConfirmPassword" className="w-full px-4 py-3 border-2 rounded-xl focus:outline-none focus:border-teal-500 transition" value={formData.confirmPassword} onChange={handleChange} required />
-          <button
-            type="button"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-            aria-label="Toggle password visibility"
-          >
-            {showConfirmPassword ? <IoEye size={20} /> : <IoEyeOff size={20} />}
-          </button>
-        </div>
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-800 transition">
 
+      <div className="flex justify-center items-center min-h-[calc(100vh-80px)] px-4">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 w-full max-w-md transition">
+          <h1 className="text-4xl font-bold text-center text-gray-900 dark:text-white mb-6">
+            Register
+          </h1>
 
-        <button type="submit" className="w-full bg-blue-500 text-xl text-white py-3 rounded-xl hover:bg-blue-400 transition duration-300">Register</button>
-        <div className="text-center text-sm">
-          Already have an account?{" "}
-          <span
-            className="text-blue-600 hover:underline cursor-pointer"
-            onClick={() => navigate("/login")}
-          >
-            Login
-          </span>
+          <form onSubmit={handleSubmit} className="space-y-5">
+
+            <input
+              type="text"
+              name="name"
+              placeholder="Enter Name"
+              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600
+                         rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white 
+                         focus:border-teal-500 dark:focus:border-teal-400 outline-none transition"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
+
+            <div>
+              <input
+                type="email"
+                name="email"
+                placeholder="Enter Email"
+                className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600
+                           rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white 
+                           focus:border-teal-500 dark:focus:border-teal-400 outline-none transition"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+              {errors.email && (
+                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+              )}
+            </div>
+
+            <div className="relative h-[70px]">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Enter Password"
+                className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600
+               rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white 
+               focus:border-teal-500 dark:focus:border-teal-400 outline-none transition"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+
+              <button
+                type="button"
+                className="absolute right-4 top-[18px] text-gray-600 dark:text-gray-400"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <IoEye size={20} /> : <IoEyeOff size={20} />}
+              </button>
+
+              {errors.password && (
+                <p className="text-red-500 text-sm mt-1 absolute left-1 top-[52px]">
+                  {errors.password}
+                </p>
+              )}
+            </div>
+            <div className="relative h-[70px]">
+              <input
+                type={showConfirm ? "text" : "password"}
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600
+               rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white 
+               focus:border-teal-500 dark:focus:border-teal-400 outline-none transition"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+              />
+
+              <button
+                type="button"
+                className="absolute right-4 top-[18px] text-gray-600 dark:text-gray-400"
+                onClick={() => setShowConfirm(!showConfirm)}
+              >
+                {showConfirm ? <IoEye size={20} /> : <IoEyeOff size={20} />}
+              </button>
+
+              {errors.confirmPassword && (
+                <p className="text-red-500 text-sm mt-1 absolute left-1 top-[52px]">
+                  {errors.confirmPassword}
+                </p>
+              )}
+            </div>
+            <button
+              type="submit"
+              className="w-full py-3 text-xl font-semibold bg-teal-600 hover:bg-teal-500 
+                         rounded-xl text-white transition"
+            >
+              Register
+            </button>
+          </form>
+
+          <div className="text-center text-sm mt-4 text-gray-600 dark:text-gray-400">
+            Already have an account?
+            <span
+              className="text-teal-600 dark:text-teal-400 font-semibold cursor-pointer ml-1"
+              onClick={() => navigate("/login")}
+            >
+              Login
+            </span>
+          </div>
         </div>
-      </form>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Registerpage
-
-
-
+export default Register;
