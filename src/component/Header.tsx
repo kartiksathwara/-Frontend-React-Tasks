@@ -28,8 +28,6 @@ const Header = () => {
     navigate("/login");     
   }
 };
-
-
   return (
     <header className="bg-white dark:bg-gray-900 text-black dark:text-white w-full py-4 px-8 flex justify-between items-center shadow-lg transition">
       <Link to="/">

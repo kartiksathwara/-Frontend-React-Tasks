@@ -1,38 +1,48 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Register from "./component/Registerpage";
 import Login from "./component/Loginpage";
 import HomePage from "./component/Homepage";
 import Welcome from "./component/Welcomepage";
-import Loading from "./component/Loadingpage";
-import { useEffect, useState } from "react";
-
-const PrivateRoute = ({ children, isAuth }: { children: React.ReactNode,isAuth: boolean | null}) => {
-  console.log(isAuth);
-  return isAuth ? <>{children}</> : <Navigate to="/login" replace />;
-};
+import ProtectedRoute from "./Routes/ProtectedRoute";
+import { useAuth } from "./hooks/useAuth";
+import PublicRoutes from "./Routes/PublicRoutes";
+import UnauthRoutes from "./Routes/UnauthRoutes";
 
 function App() {
-  
-  const [isAuth,setisAuth] = useState<boolean | null>(null)
+  const { isAuth } = useAuth();
 
-  useEffect(()=>{
-    const token = localStorage.getItem("token");
-    setisAuth(!!token)
-  },[])
- if (isAuth === null) return null;
   return (
     <BrowserRouter>
-    <Loading setisAuth={setisAuth}/>
       <Routes>
-        <Route path="/" element={<Welcome />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login/>} />
+        <Route
+          path="/"
+          element={
+            <PublicRoutes isAuth={isAuth}>
+              <Welcome />
+            </PublicRoutes>
+          } />
+
+        <Route
+          path="/login"
+          element={
+            <UnauthRoutes isAuth={isAuth}>
+              <Login />
+            </UnauthRoutes>
+          } />
+
+        <Route
+          path="/register"
+          element={
+            <UnauthRoutes isAuth={isAuth}>
+              <Register />
+            </UnauthRoutes>
+          } />
         <Route
           path="/home"
           element={
-            <PrivateRoute isAuth={isAuth}>
+            <ProtectedRoute isAuth={isAuth}>
               <HomePage />
-            </PrivateRoute>
+            </ProtectedRoute>
           }
         />
       </Routes>

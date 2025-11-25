@@ -82,15 +82,12 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-800 transition">
-
       <div className="flex justify-center items-center min-h-[calc(100vh-80px)] px-4">
         <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xl p-8 w-full max-w-md transition">
           <h1 className="text-4xl font-bold text-center text-gray-900 dark:text-white mb-6">
             Register
           </h1>
-
           <form onSubmit={handleSubmit} className="space-y-5">
-
             <input
               type="text"
               name="name"
@@ -102,7 +99,6 @@ const Register = () => {
               onChange={handleChange}
               required
             />
-
             <div>
               <input
                 type="email"
@@ -116,7 +112,7 @@ const Register = () => {
                 required
               />
               {errors.email && (
-                <p className="text-red-500 text-sm mt-1">{errors.email}</p>
+                <p className="text-red-500 text-sm mt-1 top-[46px]">{errors.email}</p>
               )}
             </div>
 
@@ -142,7 +138,7 @@ const Register = () => {
               </button>
 
               {errors.password && (
-                <p className="text-red-500 text-sm mt-1 absolute left-1 top-[52px]">
+                <p className="text-red-500 text-sm mt-1 absolute left-1 top-[46px]">
                   {errors.password}
                 </p>
               )}
@@ -169,7 +165,7 @@ const Register = () => {
               </button>
 
               {errors.confirmPassword && (
-                <p className="text-red-500 text-sm mt-1 absolute left-1 top-[52px]">
+                <p className="text-red-500 text-sm mt-1 absolute left-1 top-[46px]">
                   {errors.confirmPassword}
                 </p>
               )}
