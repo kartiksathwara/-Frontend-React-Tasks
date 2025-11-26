@@ -8,6 +8,7 @@ import { useAuth } from "./hooks/useAuth";
 import PublicRoutes from "./Routes/PublicRoutes";
 import UnauthRoutes from "./Routes/UnauthRoutes";
 
+
 function App() {
   const { isAuth } = useAuth();
 
@@ -15,36 +16,40 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route
-          path="/"
-          element={
-            <PublicRoutes isAuth={isAuth}>
-              <Welcome />
-            </PublicRoutes>
-          } />
+  path="/"
+  element={
+    <PublicRoutes isAuth={isAuth}>
+      <Welcome />
+    </PublicRoutes>
+  }
+/>
 
-        <Route
-          path="/login"
-          element={
-            <UnauthRoutes isAuth={isAuth}>
-              <Login />
-            </UnauthRoutes>
-          } />
+<Route
+  path="/login"
+  element={
+    <UnauthRoutes isAuth={isAuth}>
+      <Login />
+    </UnauthRoutes>
+  }
+/>
 
-        <Route
-          path="/register"
-          element={
-            <UnauthRoutes isAuth={isAuth}>
-              <Register />
-            </UnauthRoutes>
-          } />
-        <Route
-          path="/home"
-          element={
-            <ProtectedRoute isAuth={isAuth}>
-              <HomePage />
-            </ProtectedRoute>
-          }
-        />
+<Route
+  path="/register"
+  element={
+    <UnauthRoutes isAuth={isAuth}>
+      <Register />
+    </UnauthRoutes>
+  }
+/>
+
+<Route
+  path="/home"
+  element={
+    <ProtectedRoute isAuth={isAuth}>
+      <HomePage />
+    </ProtectedRoute>
+  }
+/>
       </Routes>
     </BrowserRouter>
   );

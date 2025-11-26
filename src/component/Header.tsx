@@ -1,23 +1,11 @@
-import { useState, useEffect } from "react";
 import { FaMoon, FaSun, FaUser } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
+import { useTheme } from "../hooks/useTheam";
 
 const Header = () => {
-  const [theme, setTheme] = useState("light");
+  const {theme, toggleTheme} = useTheme ();
+
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const saved = localStorage.getItem("theme") || "light";
-    setTheme(saved);
-    document.documentElement.classList.toggle("dark", saved === "dark");
-  }, []);
-
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    document.documentElement.classList.toggle("dark", newTheme === "dark");
-    localStorage.setItem("theme", newTheme);
-  };
 
   const handleUserClick = () => {
   const token = localStorage.getItem("token"); 

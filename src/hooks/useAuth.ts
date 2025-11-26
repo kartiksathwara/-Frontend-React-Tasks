@@ -17,3 +17,11 @@ export const useAuth = () => {
         logout
     };
 };
+
+
+
+// import { useAuthStore } from "../store/AuthContext";
+
+// export const useAuth = () => {
+//   return useAuthStore();
+// };
