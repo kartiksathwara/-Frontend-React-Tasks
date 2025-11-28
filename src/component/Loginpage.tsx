@@ -140,7 +140,7 @@ const Login = () => {
                         <input
                             type="email"
                             placeholder="Enter Email"
-                            className="w-full px-4 py-3 border-2 rounded-xl"
+                            className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:border-teal-500 dark:focus:border-teal-400 outline-none transition"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
@@ -150,14 +150,14 @@ const Login = () => {
                             <input
                                 type={showPassword ? "text" : "password"}
                                 placeholder="Enter Password"
-                                className="w-full px-4 py-3 border-2 rounded-xl"
+                                className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:border-teal-500 dark:focus:border-teal-400 outline-none transition"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
                             <button
                                 type="button"
-                                className="absolute right-4 top-1/2 -translate-y-1/2"
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-600 dark:text-gray-400"
                                 onClick={() => setShowPassword(!showPassword)}
                             >
                                 {showPassword ? <IoEye size={20} /> : <IoEyeOff size={20} />}
@@ -172,10 +172,10 @@ const Login = () => {
                         </button>
                     </form>
 
-                    <div className="text-center text-sm mt-4">
+                    <div className="text-center text-sm mt-4 text-gray-600 dark:text-gray-400">
                         Don’t have an account?
                         <span
-                            className="text-teal-600 font-semibold cursor-pointer ml-1"
+                            className="text-teal-600 dark:text-teal-400 font-semibold cursor-pointer ml-1"
                             onClick={() => navigate("/register")}
                         >
                             Register
