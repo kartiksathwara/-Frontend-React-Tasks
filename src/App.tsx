@@ -1,3 +1,4 @@
+// src/App.tsx
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Register from "./component/Registerpage";
 import Login from "./component/Loginpage";
@@ -7,7 +8,8 @@ import ProtectedRoute from "./Routes/ProtectedRoute";
 import PublicRoutes from "./Routes/PublicRoutes";
 import UnauthRoutes from "./Routes/UnauthRoutes";
 import { useAuth } from "./hooks/useAuth";
-
+import TodoForm from "./pages/TodoForm";
+import Dashboard from "./pages/Dashbord";
 function App() {
   const { token } = useAuth();
   const isAuth = !!token;
@@ -47,6 +49,24 @@ function App() {
           element={
             <ProtectedRoute isauth={isAuth}>
               <HomePage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/create-todo"
+          element={
+            <ProtectedRoute isauth={isAuth}>
+              <TodoForm />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute isauth={isAuth}>
+              <Dashboard />
             </ProtectedRoute>
           }
         />

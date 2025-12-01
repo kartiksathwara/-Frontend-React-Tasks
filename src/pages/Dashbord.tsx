@@ -1,55 +1,159 @@
-import { useState } from "react";
-import { api } from "../api/APIServices";
-import { useFetchTodoList } from "../hooks/useFetchTodoList";
-const Dashboard = () => {
-  const token = localStorage.getItem("token") || "";
-  const { data: todos, isFetching, refetch } = useFetchTodoList(token);
-  const [newTodo, setNewTodo] = useState("");
+// import { useState } from "react";
+// import { api } from "../api/APIServices";
+// import { useFetchTodoList } from "../hooks/useFetchTodoList";
+// const Dashboard = () => {
+//   const token = localStorage.getItem("token") || "";
+//   const { data: todos, isFetching, refetch } = useFetchTodoList(token);
+//   const [newTodo, setNewTodo] = useState("");
 
-  const handleCreate = async () => {
-    await api.createTodo({ title: newTodo }, token);
-    setNewTodo("");
-    refetch();
-  };
+//   const handleCreate = async () => {
+//     await api.createTodo({ title: newTodo }, token);
+//     setNewTodo("");
+//     refetch();
+//   };
 
-  const handleDelete = async (id: string) => {
-    await api.deleteTodo(id, token);
-    refetch();
-  };
+//   const handleDelete = async (id: string) => {
+//     await api.deleteTodo(id, token);
+//     refetch();
+//   };
 
-  const handleClone = async (id: string) => {
-    await api.cloneTodo(id, token);
-    refetch();
-  };
+//   const handleClone = async (id: string) => {
+//     await api.cloneTodo(id, token);
+//     refetch();
+//   };
 
-  const handleUpdate = async (id: string) => {
-    const title = prompt("Enter new title");
-    if (title) {
-      await api.updateTodo(id, { title }, token);
-      refetch();
+//   const handleUpdate = async (id: string) => {
+//     const title = prompt("Enter new title");
+//     if (title) {
+//       await api.updateTodo(id, { title }, token);
+//       refetch();
+//     }
+//   };
+
+//   if (isFetching) return <p>Loading Todos...</p>;
+
+//   return (
+//     <div>
+//       <h1>Todo Dashboard</h1>
+//       <input value={newTodo} onChange={e => setNewTodo(e.target.value)} placeholder="New Todo" />
+//       <button onClick={handleCreate}>Add Todo</button>
+
+//       <ul>
+//         {todos?.map((todo: any) => (
+//           <li key={todo._id}>
+//             {todo.title}
+//             <button onClick={() => handleUpdate(todo._id)}>Edit</button>
+//             <button onClick={() => handleDelete(todo._id)}>Delete</button>
+//             <button onClick={() => handleClone(todo._id)}>Clone</button>
+//           </li>
+//         ))}
+//       </ul>
+//     </div>
+//   );
+// };
+
+// export default Dashboard;
+
+
+
+
+// src/component/Deshbord.tsx
+import React, { useEffect, useState } from "react";
+import Sidebar from "../component/Sidebar";
+type ListChild = {
+  name: string;
+  email: string;
+  phone: string;
+};
+
+type Todo = {
+  id: string;
+  title: string;
+  description: string;
+  list: ListChild[];
+  createdAt: string;
+};
+
+const Deshbord: React.FC = () => {
+  const [todos, setTodos] = useState<Todo[]>([]);
+
+  useEffect(() => {
+    const raw = localStorage.getItem("todos");
+    if (!raw) {
+      setTodos([]);
+      return;
     }
-  };
+    try {
+      const parsed = JSON.parse(raw) as Todo[];
+      setTodos(parsed);
+    } catch (e) {
+      setTodos([]);
+    }
+  }, []);
 
-  if (isFetching) return <p>Loading Todos...</p>;
+  const handleDelete = (id: string) => {
+    const filtered = todos.filter(t => t.id !== id);
+    setTodos(filtered);
+    localStorage.setItem("todos", JSON.stringify(filtered));
+  };
 
   return (
-    <div>
-      <h1>Todo Dashboard</h1>
-      <input value={newTodo} onChange={e => setNewTodo(e.target.value)} placeholder="New Todo" />
-      <button onClick={handleCreate}>Add Todo</button>
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
+      <Sidebar />
+      <main className="ml-64 p-6">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold">My Todos</h1>
+          </div>
 
-      <ul>
-        {todos?.map((todo: any) => (
-          <li key={todo._id}>
-            {todo.title}
-            <button onClick={() => handleUpdate(todo._id)}>Edit</button>
-            <button onClick={() => handleDelete(todo._id)}>Delete</button>
-            <button onClick={() => handleClone(todo._id)}>Clone</button>
-          </li>
-        ))}
-      </ul>
+          {todos.length === 0 ? (
+            <div className="bg-white dark:bg-gray-800 rounded p-6 shadow border dark:border-gray-700">
+              <p>No todos yet. Create one!</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {todos.map((todo) => (
+                <div key={todo.id} className="bg-white dark:bg-gray-800 rounded p-4 shadow border dark:border-gray-700">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h2 className="text-xl font-semibold">{todo.title}</h2>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">{todo.description}</p>
+                      <p className="text-xs text-gray-500 mt-1">Created: {new Date(todo.createdAt).toLocaleString()}</p>
+
+                      <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
+                        {todo.list.map((child, i) => (
+                          <div key={i} className="p-3 border rounded dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+                            <p className="font-medium">{child.name}</p>
+                            <p className="text-sm">{child.email}</p>
+                            <p className="text-sm">{child.phone}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2 ml-4">
+                      <button
+                        onClick={() => navigator.clipboard?.writeText(JSON.stringify(todo))}
+                        className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700"
+                      >
+                        Copy
+                      </button>
+                      <button
+                        onClick={() => handleDelete(todo.id)}
+                        className="px-3 py-1 rounded bg-red-500 text-white"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
     </div>
   );
 };
 
-export default Dashboard;
+export default Deshbord;

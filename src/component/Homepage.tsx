@@ -111,12 +111,21 @@ const HomePage = () => {
           <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
             This is your private homepage. Start managing your tasks right away!
           </p>
-          <button 
-            onClick={() => {/* Navigate to Todo List Page */}}
-            className="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 
-              text-white text-xl px-8 py-3 rounded-xl shadow-md transform hover:scale-105 transition-all font-semibold">
-            Go to My Todos
-          </button>
+          <div className="flex gap-4 justify-center">
+            <button
+              onClick={() => navigate("/create-todo")}
+              className="bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 
+                text-white text-xl px-6 py-3 rounded-xl shadow-md transform hover:scale-105 transition-all font-semibold">
+              Create Todo
+            </button>
+
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 
+                text-white text-xl px-6 py-3 rounded-xl shadow-md transform hover:scale-105 transition-all font-semibold">
+              Go to My Todos
+            </button>
+          </div>
         </div>
       </main>
 
