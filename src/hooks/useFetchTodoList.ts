@@ -1,8 +1,20 @@
+// import useDataFetch from "./useDataFetch";
+// import { api } from "../api/APIServices";
+// export const useFetchTodoList = (token: string, disableAutoFetch = false) => {
+//   return useDataFetch({
+//     fetchFn: () => api.getTodos(token),
+//     disableAutoFetch,
+//   });
+// };
+
+
+
+
 import useDataFetch from "./useDataFetch";
-import { api } from "../api/APIServices";
-export const useFetchTodoList = (token: string, disableAutoFetch = false) => {
+import { getTodoList } from "../api/todoServices";
+export default function useFetchTodoList() {
   return useDataFetch({
-    fetchFn: () => api.getTodos(token),
-    disableAutoFetch,
+    initState: [],
+    fetchFn: async () => await getTodoList(),
   });
-};
+}
