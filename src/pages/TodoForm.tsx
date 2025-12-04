@@ -3,18 +3,11 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { isValidIndianPhone, ensurePlus91 } from "../hooks/PhoneNumber";
 import Sidebar from "../component/Sidebar";
+
 type ListChild = {
   name: string;
   email: string;
   phone: string;
-};
-
-type Todo = {
-  id: string;
-  title: string;
-  description: string;
-  list: ListChild[];
-  createdAt: string;
 };
 
 type Errors = {
@@ -26,6 +19,8 @@ type Errors = {
 
 const initialChild = (): ListChild => ({ name: "", email: "", phone: "" });
 
+const MAX_LIST = 4;
+
 const TodoForm: React.FC = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
@@ -33,8 +28,7 @@ const TodoForm: React.FC = () => {
   const [list, setList] = useState<ListChild[]>([initialChild()]);
   const [errors, setErrors] = useState<Errors>({ children: {} });
 
-  const MAX_LIST = 4;
-
+  // Validation function
   const validate = (): boolean => {
     const newErrors: Errors = { children: {} };
     let valid = true;
@@ -61,19 +55,18 @@ const TodoForm: React.FC = () => {
 
     list.forEach((child, idx) => {
       const childErr: { name?: string; email?: string; phone?: string } = {};
-      if (!child.name || !child.name.trim()) {
+
+      if (!child.name.trim()) {
         childErr.name = "Name should not be empty";
         valid = false;
       }
 
-      // simple email regex
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!child.email || !emailRegex.test(child.email)) {
         childErr.email = "Enter a valid email";
         valid = false;
       }
 
-      // phone validation: ensure +91xxxxxxxxxx
       if (!child.phone || !isValidIndianPhone(child.phone)) {
         childErr.phone = "Enter valid Indian phone with +91 and 10 digits";
         valid = false;
@@ -88,18 +81,7 @@ const TodoForm: React.FC = () => {
     return valid;
   };
 
-  const saveTodoToLocal = (todo: Todo) => {
-    const raw = localStorage.getItem("todos");
-    let todos: Todo[] = [];
-    try {
-      todos = raw ? JSON.parse(raw) : [];
-    } catch (e) {
-      todos = [];
-    }
-    todos.unshift(todo);
-    localStorage.setItem("todos", JSON.stringify(todos));
-  };
-
+  // Handle adding/removing children
   const handleAddChild = () => {
     if (list.length >= MAX_LIST) return;
     setList(prev => [...prev, initialChild()]);
@@ -109,7 +91,6 @@ const TodoForm: React.FC = () => {
     setList(prev => prev.filter((_, i) => i !== index));
     setErrors(prev => {
       const newChildren = { ...(prev.children || {}) };
-      // shift indexes
       const newChildrenShifted: any = {};
       Object.keys(newChildren).forEach(key => {
         const k = Number(key);
@@ -127,7 +108,6 @@ const TodoForm: React.FC = () => {
       return copy;
     });
 
-    // clear error for field
     setErrors(prev => {
       const children = { ...(prev.children || {}) };
       if (children[index]) {
@@ -138,83 +118,47 @@ const TodoForm: React.FC = () => {
     });
   };
 
-  const handleSubmit = (e?: React.FormEvent) => {
+  // Submit function - send to backend
+  const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
 
-    // Normalize phone numbers before validation/save
     const normalizedList = list.map(child => ({
       ...child,
       phone: ensurePlus91(child.phone),
     }));
 
-    // temporarily set normalized list in state for validation
     setList(normalizedList);
 
-    // small delay to ensure state set (but we can validate using normalizedList directly)
-    const isValid = (() => {
-      const newErrors: Errors = { children: {} };
-      let valid = true;
+    if (!validate()) return;
 
-      if (!title.trim()) {
-        newErrors.title = "Title should not be empty";
-        valid = false;
-      }
-
-      if (!description.trim()) {
-        newErrors.description = "Description should not be empty";
-        valid = false;
-      }
-
-      if (!normalizedList || normalizedList.length === 0) {
-        newErrors.list = "List should not be empty";
-        valid = false;
-      }
-
-      if (normalizedList.length > MAX_LIST) {
-        newErrors.list = `List cannot have more than ${MAX_LIST} items`;
-        valid = false;
-      }
-
-      normalizedList.forEach((child, idx) => {
-        const childErr: { name?: string; email?: string; phone?: string } = {};
-        if (!child.name || !child.name.trim()) {
-          childErr.name = "Name should not be empty";
-          valid = false;
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!child.email || !emailRegex.test(child.email)) {
-          childErr.email = "Enter a valid email";
-          valid = false;
-        }
-
-        if (!child.phone || !isValidIndianPhone(child.phone)) {
-          childErr.phone = "Enter valid Indian phone with +91 and 10 digits";
-          valid = false;
-        }
-
-        if (Object.keys(childErr).length > 0) {
-          (newErrors.children as any)[idx] = childErr;
-        }
-      });
-
-      setErrors(newErrors);
-      return valid;
-    })();
-
-    if (!isValid) return;
-
-    const todo: Todo = {
-      id: `${Date.now()}`,
+    const todoData = {
       title: title.trim(),
       description: description.trim(),
-      list: normalizedList,
-      createdAt: new Date().toISOString(),
+      usersAttached: normalizedList,
     };
 
-    saveTodoToLocal(todo);
-    // navigate to dashboard
-    navigate("/dashboard");
+    try {
+      const token = localStorage.getItem("token"); // JWT from login
+
+      const res = await fetch("http://localhost:5000/api/todos/save", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(todoData),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        console.error("Save error:", data.message);
+        return;
+      }
+
+      navigate("/dashboard");
+    } catch (err) {
+      console.error("Error saving todo:", err);
+    }
   };
 
   return (
@@ -250,18 +194,15 @@ const TodoForm: React.FC = () => {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <h2 className="text-lg font-semibold">List (max {MAX_LIST})</h2>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={handleAddChild}
-                    disabled={list.length >= MAX_LIST}
-                    className="px-3 py-1 rounded bg-green-600 text-white disabled:opacity-60"
-                  >
-                    + Add
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={handleAddChild}
+                  disabled={list.length >= MAX_LIST}
+                  className="px-3 py-1 rounded bg-green-600 text-white disabled:opacity-60"
+                >
+                  + Add
+                </button>
               </div>
-
               {errors.list && <p className="text-red-500 text-sm mb-2">{errors.list}</p>}
 
               <div className="space-y-4">
@@ -269,16 +210,14 @@ const TodoForm: React.FC = () => {
                   <div key={idx} className="p-3 border rounded dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
                     <div className="flex justify-between items-center mb-2">
                       <h3 className="font-medium">Item {idx + 1}</h3>
-                      <div className="flex gap-2">
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveChild(idx)}
-                          disabled={list.length === 1}
-                          className="px-2 py-1 rounded bg-red-500 text-white disabled:opacity-60"
-                        >
-                          Remove
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveChild(idx)}
+                        disabled={list.length === 1}
+                        className="px-2 py-1 rounded bg-red-500 text-white disabled:opacity-60"
+                      >
+                        Remove
+                      </button>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -290,7 +229,7 @@ const TodoForm: React.FC = () => {
                           className="w-full p-2 rounded border dark:border-gray-700 bg-white dark:bg-gray-900"
                           placeholder="Name"
                         />
-                        {errors.children && errors.children[idx] && errors.children[idx].name && (
+                        {errors.children && errors.children[idx]?.name && (
                           <p className="text-red-500 text-sm mt-1">{errors.children[idx].name}</p>
                         )}
                       </div>
@@ -303,7 +242,7 @@ const TodoForm: React.FC = () => {
                           className="w-full p-2 rounded border dark:border-gray-700 bg-white dark:bg-gray-900"
                           placeholder="Email"
                         />
-                        {errors.children && errors.children[idx] && errors.children[idx].email && (
+                        {errors.children && errors.children[idx]?.email && (
                           <p className="text-red-500 text-sm mt-1">{errors.children[idx].email}</p>
                         )}
                       </div>
@@ -316,7 +255,7 @@ const TodoForm: React.FC = () => {
                           className="w-full p-2 rounded border dark:border-gray-700 bg-white dark:bg-gray-900"
                           placeholder="+911234567890"
                         />
-                        {errors.children && errors.children[idx] && errors.children[idx].phone && (
+                        {errors.children && errors.children[idx]?.phone && (
                           <p className="text-red-500 text-sm mt-1">{errors.children[idx].phone}</p>
                         )}
                       </div>

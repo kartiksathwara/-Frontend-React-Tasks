@@ -1,20 +1,10 @@
-// import useDataFetch from "./useDataFetch";
-// import { api } from "../api/APIServices";
-// export const useFetchTodoList = (token: string, disableAutoFetch = false) => {
-//   return useDataFetch({
-//     fetchFn: () => api.getTodos(token),
-//     disableAutoFetch,
-//   });
-// };
-
-
-
-
+// useFetchTodoList.ts
 import useDataFetch from "./useDataFetch";
-import { getTodoList } from "../api/todoServices";
-export default function useFetchTodoList() {
-  return useDataFetch({
+import { api } from "../api/APIServices";
+import type { TodoItem } from "../types/todo";
+
+export const useFetchTodoList = () =>
+  useDataFetch<TodoItem[]>({
     initState: [],
-    fetchFn: async () => await getTodoList(),
+    fetchFn: () => api.getTodoList<TodoItem[]>(),
   });
-}

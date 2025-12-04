@@ -51,32 +51,34 @@ export const getTodoDetails = async (req, res) => {
 
 export const saveTodo = async (req, res) => {
   try {
-    const { id, title, description, usersAttached } = req.body;
+    console.log("Received todo data:", req.body);
+    console.log("User ID:", req.user.userId);
 
-    const todoDoc = await Todo.findOne({ userId: req.user.userId });
+    let todoDoc = await Todo.findOne({ userId: req.user.userId });
 
-    if (id) {
-      // update existing
-      const todo = todoDoc.todos.id(id);
-      todo.title = title;
-      todo.description = description;
-      todo.usersAttached = usersAttached;
-    } else {
-      // add new (auto _id will be generated)
-      todoDoc.todos.push({
-        title,
-        description,
-        usersAttached,
+    if (!todoDoc) {
+      todoDoc = new Todo({
+        userId: req.user.userId,
+        todos: [],
       });
     }
 
-    await todoDoc.save();
-    res.json({ message: "Saved successfully" });
+    todoDoc.todos.push({
+      title: req.body.title,
+      description: req.body.description,
+      usersAttached: req.body.usersAttached,
+    });
 
+    await todoDoc.save();
+
+    res.json({ message: "Saved successfully" });
   } catch (err) {
+    console.error("Save error:", err);
     res.status(500).json({ message: "Save error" });
   }
 };
+
+
 
 // export const deleteTodo = async (req, res) => {
 //   try {
