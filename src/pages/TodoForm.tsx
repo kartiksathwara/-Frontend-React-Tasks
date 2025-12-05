@@ -1,8 +1,7 @@
-// src/component/TodoForm.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { isValidIndianPhone, ensurePlus91 } from "../hooks/PhoneNumber";
-import Sidebar from "../component/Sidebar";
+import Header from "./Header";
 
 type ListChild = {
   name: string;
@@ -163,7 +162,7 @@ const TodoForm: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
-      <Sidebar />
+      <Header />
       <main className="ml-64 p-6">
         <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-2xl p-6 shadow border dark:border-gray-700">
           <h1 className="text-2xl font-bold mb-4">Create Todo</h1>
