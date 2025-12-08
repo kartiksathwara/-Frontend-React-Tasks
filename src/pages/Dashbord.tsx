@@ -283,7 +283,7 @@ const Dashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
       <Header />
-      <main className="ml-64 p-6">
+      <main className="ml-10 p-6">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-2xl font-bold">My Todos</h1>

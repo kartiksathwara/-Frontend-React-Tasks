@@ -438,7 +438,7 @@ const TodoForm: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
       <Header />
-      <main className="ml-64 p-6">
+      <main className="ml-10 p-6">
         <div className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-2xl p-6 shadow border dark:border-gray-700">
           <h1 className="text-2xl font-bold mb-4">{id ? "Edit Todo" : "Create Todo"}</h1>
 
