@@ -11,7 +11,7 @@ import {
 
 const router = express.Router();
 
-router.get("/todos", auth, getTodoList);
+router.get("/", auth, getTodoList);
 router.get("/:id", auth, getTodoDetails);
 router.post("/save", auth, saveTodo);
 router.put("/save/:id", auth, saveTodo); // update route

@@ -25,8 +25,8 @@ const Dashboard: React.FC = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      // setTodos(data);
-      setTodos(Array.isArray(data) ? data : []);
+      setTodos(data);
+      // setTodos(Array.isArray(data) ? data : []);
 
     } catch (err) {
       console.error("Fetch todos error:", err);

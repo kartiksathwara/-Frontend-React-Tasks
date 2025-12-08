@@ -4,8 +4,8 @@ export const getTodoList = async (req, res) => {
   try {
     const result = await Todo.findOne({ userId: req.user.userId });
 
-    // if (!result) return res.status(404).json({ message: "Not found" });
-    if (!result) return res.json([]);
+    if (!result) return res.status(404).json({ message: "Not found" });
+    // if (!result) return res.json([]);
 
     res.json(result.todos);
   } catch (err) {
