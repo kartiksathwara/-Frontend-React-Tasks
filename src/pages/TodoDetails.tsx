@@ -10,7 +10,7 @@ const TodoDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const { data: todoData, refetch } = useFetchTodoDetails(id || "", !!id);
+  const { data: todoData } = useFetchTodoDetails(id || "", !!id);
 
   const [todo, setTodo] = useState<TodoItem>({
     title: "",
