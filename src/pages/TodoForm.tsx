@@ -286,8 +286,6 @@
 
 // export default TodoForm;
 
-
-
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { isValidIndianPhone, ensurePlus91 } from "../hooks/PhoneNumber";
@@ -306,28 +304,44 @@ const initialChild = (): ListChild => ({ name: "", email: "", phone: "" });
 const MAX_LIST = 4;
 
 const TodoForm: React.FC = () => {
-  const { id } = useParams();
+  const { id } = useParams(); // for edit
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [list, setList] = useState<ListChild[]>([initialChild()]);
   const [errors, setErrors] = useState<Errors>({ children: {} });
 
+  const query = new URLSearchParams(window.location.search);
+  const cloneId = query.get("cloneId");
+  const token = localStorage.getItem("token");
+
   // Fetch todo if editing
   useEffect(() => {
-    if (!id) return;
-    const fetchTodo = async () => {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5000/api/todos/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      setTitle(data.title);
-      setDescription(data.description);
-      setList(data.usersAttached.length ? data.usersAttached : [initialChild()]);
-    };
-    fetchTodo();
-  }, [id]);
+    if (id) {
+      const fetchTodo = async () => {
+        const res = await fetch(`http://localhost:5000/api/todos/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        setTitle(data.title);
+        setDescription(data.description);
+        setList(data.usersAttached.length ? data.usersAttached : [initialChild()]);
+      };
+      fetchTodo();
+    } else if (cloneId) {
+      // Fetch clone data without setting id
+      const fetchClone = async () => {
+        const res = await fetch(`http://localhost:5000/api/todos/${cloneId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        setTitle(data.title);
+        setDescription(data.description);
+        setList(data.usersAttached.length ? data.usersAttached : [initialChild()]);
+      };
+      fetchClone();
+    }
+  }, [id, cloneId, token]);
 
   // Validation
   const validate = (): boolean => {
@@ -383,10 +397,13 @@ const TodoForm: React.FC = () => {
 
     if (!validate()) return;
 
-    const todoData = { title: title.trim(), description: description.trim(), usersAttached: normalizedList, id };
+    // Logic: if editing (id exists) → send id, else create new (even clone)
+    const todoData =
+      id && !cloneId
+        ? { title: title.trim(), description: description.trim(), usersAttached: normalizedList, id }
+        : { title: title.trim(), description: description.trim(), usersAttached: normalizedList };
 
     try {
-      const token = localStorage.getItem("token");
       const res = await fetch("http://localhost:5000/api/todos/save", {
         method: "POST",
         headers: {
@@ -396,6 +413,7 @@ const TodoForm: React.FC = () => {
         body: JSON.stringify(todoData),
       });
       const data = await res.json();
+
       if (!res.ok) {
         console.error("Save error:", data.message);
         return;
@@ -407,10 +425,14 @@ const TodoForm: React.FC = () => {
   };
 
   // Add / Remove child
-  const handleAddChild = () => { if (list.length < MAX_LIST) setList([...list, initialChild()]); };
+  const handleAddChild = () => {
+    if (list.length < MAX_LIST) setList([...list, initialChild()]);
+  };
   const handleRemoveChild = (index: number) => setList(list.filter((_, i) => i !== index));
   const handleChildChange = (index: number, field: keyof ListChild, value: string) => {
-    const newList = [...list]; newList[index][field] = value; setList(newList);
+    const newList = [...list];
+    newList[index][field] = value;
+    setList(newList);
   };
 
   return (
@@ -423,39 +445,72 @@ const TodoForm: React.FC = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block mb-1">Title</label>
-              <input value={title} onChange={e => setTitle(e.target.value)}
-                className="w-full p-2 rounded border dark:border-gray-700 bg-white dark:bg-gray-900" />
+              <input
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+                className="w-full p-2 rounded border dark:border-gray-700 bg-white dark:bg-gray-900"
+              />
               {errors.title && <p className="text-red-500 text-sm">{errors.title}</p>}
             </div>
 
             <div>
               <label className="block mb-1">Description</label>
-              <textarea value={description} onChange={e => setDescription(e.target.value)}
-                className="w-full p-2 rounded border dark:border-gray-700 bg-white dark:bg-gray-900" />
+              <textarea
+                value={description}
+                onChange={e => setDescription(e.target.value)}
+                className="w-full p-2 rounded border dark:border-gray-700 bg-white dark:bg-gray-900"
+              />
               {errors.description && <p className="text-red-500 text-sm">{errors.description}</p>}
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-2">
                 <h2 className="text-lg font-semibold">List (max {MAX_LIST})</h2>
-                <button type="button" onClick={handleAddChild} disabled={list.length >= MAX_LIST}
-                  className="px-3 py-1 rounded bg-green-600 text-white disabled:opacity-60">+ Add</button>
+                <button
+                  type="button"
+                  onClick={handleAddChild}
+                  disabled={list.length >= MAX_LIST}
+                  className="px-3 py-1 rounded bg-green-600 text-white disabled:opacity-60"
+                >
+                  + Add
+                </button>
               </div>
 
               {errors.list && <p className="text-red-500 text-sm mb-2">{errors.list}</p>}
               <div className="space-y-4">
                 {list.map((child, idx) => (
-                  <div key={idx} className="p-3 border rounded dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+                  <div
+                    key={idx}
+                    className="p-3 border rounded dark:border-gray-700 bg-gray-50 dark:bg-gray-900"
+                  >
                     <div className="flex justify-between items-center mb-2">
                       <h3 className="font-medium">Item {idx + 1}</h3>
-                      <button type="button" onClick={() => handleRemoveChild(idx)}
-                        disabled={list.length === 1} className="px-2 py-1 rounded bg-red-500 text-white disabled:opacity-60">Remove</button>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveChild(idx)}
+                        disabled={list.length === 1}
+                        className="px-2 py-1 rounded bg-red-500 text-white disabled:opacity-60"
+                      >
+                        Remove
+                      </button>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      <input placeholder="Name" value={child.name} onChange={e => handleChildChange(idx, "name", e.target.value)} />
-                      <input placeholder="Email" value={child.email} onChange={e => handleChildChange(idx, "email", e.target.value)} />
-                      <input placeholder="Phone (+91XXXXXXXXXX)" value={child.phone} onChange={e => handleChildChange(idx, "phone", e.target.value)} />
+                      <input
+                        placeholder="Name"
+                        value={child.name}
+                        onChange={e => handleChildChange(idx, "name", e.target.value)}
+                      />
+                      <input
+                        placeholder="Email"
+                        value={child.email}
+                        onChange={e => handleChildChange(idx, "email", e.target.value)}
+                      />
+                      <input
+                        placeholder="Phone (+91XXXXXXXXXX)"
+                        value={child.phone}
+                        onChange={e => handleChildChange(idx, "phone", e.target.value)}
+                      />
                     </div>
                   </div>
                 ))}
@@ -463,8 +518,19 @@ const TodoForm: React.FC = () => {
             </div>
 
             <div className="flex gap-3 justify-end">
-              <button type="button" onClick={() => navigate("/dashboard")} className="px-4 py-2 rounded border">Cancel</button>
-              <button type="submit" className="px-6 py-2 rounded bg-blue-600 text-white">{id ? "Update Todo" : "Save Todo"}</button>
+              <button
+                type="button"
+                onClick={() => navigate("/dashboard")}
+                className="px-4 py-2 rounded border"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-6 py-2 rounded bg-blue-600 text-white"
+              >
+                {id ? "Update Todo" : "Save Todo"}
+              </button>
             </div>
           </form>
         </div>

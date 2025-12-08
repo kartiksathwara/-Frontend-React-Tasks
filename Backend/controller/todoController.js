@@ -209,12 +209,15 @@ export const saveTodo = async (req, res) => {
     }
 
     if (id) {
-      const index = todoDoc.todos.findIndex((t) => t._id.toString() === id);
-      if (index === -1) return res.status(404).json({ message: "Todo not found" });
-      todoDoc.todos[index] = { ...todoDoc.todos[index]._doc, title, description, usersAttached };
-    } else {
-      todoDoc.todos.push({ title, description, usersAttached });
-    }
+  const todo = todoDoc.todos.id(id);
+  if (!todo) return res.status(404).json({ message: "Todo not found" });
+
+  // update subdocument properly
+  todo.title = title;
+  todo.description = description;
+  todo.usersAttached = usersAttached;
+}
+
 
     await todoDoc.save();
     res.json({ message: "Saved successfully" });

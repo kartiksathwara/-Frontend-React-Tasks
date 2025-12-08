@@ -196,7 +196,6 @@
 // export default Dashboard;
 
 
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "./Header";
@@ -245,17 +244,21 @@ const Dashboard: React.FC = () => {
   };
 
   const handleClone = async (id: string) => {
-    try {
-      await fetch(`http://localhost:5000/api/todos/clone/${id}`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      fetchTodos();
-    } catch (err) {
-      console.error("Clone error:", err);
-    }
+    // Navigate to TodoForm with cloneId
+    navigate(`/create-todo?cloneId=${id}`);
   };
 
+  //   const handleClone = async (id: string) => {
+  //   try {
+  //     await fetch(`http://localhost:5000/api/todos/clone/${id}`, {
+  //       method: "POST",
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+  //     fetchTodos();
+  //   } catch (err) {
+  //     console.error("Clone error:", err);
+  //   }
+  // };
   const handleReorder = async (fromIndex: number, toIndex: number) => {
     if (toIndex < 0 || toIndex >= todos.length) return;
     const newTodos = [...todos];
