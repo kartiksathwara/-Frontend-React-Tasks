@@ -24,6 +24,35 @@ export const getTodoDetails = async (req, res) => {
     res.status(500).json({ message: "Error fetching details" });
   }
 };
+// export const saveTodo = async (req, res) => {
+//   try {
+//     console.log("Received todo data:", req.body);
+//     console.log("User ID:", req.user.userId);
+
+//     let todoDoc = await Todo.findOne({ userId: req.user.userId });
+
+//     if (!todoDoc) {
+//       todoDoc = new Todo({
+//         userId: req.user.userId,
+//         todos: [],
+//       });
+//     }
+
+//     todoDoc.todos.push({
+//       title: req.body.title,
+//       description: req.body.description,
+//       usersAttached: req.body.usersAttached,
+//     });
+
+//     await todoDoc.save();
+
+//     res.json({ message: "Saved successfully" });
+//   } catch (err) {
+//     console.error("Save error:", err);
+//     res.status(500).json({ message: "Save error" });
+//   }
+// };
+
 export const saveTodo = async (req, res) => {
   try {
     console.log("Received todo data:", req.body);
@@ -38,14 +67,24 @@ export const saveTodo = async (req, res) => {
       });
     }
 
-    todoDoc.todos.push({
-      title: req.body.title,
-      description: req.body.description,
-      usersAttached: req.body.usersAttached,
-    });
+    if (req.body.id) {
+      // Update existing todo
+      const existingTodo = todoDoc.todos.id(req.body.id);
+      if (!existingTodo) return res.status(404).json({ message: "Todo not found" });
+
+      existingTodo.title = req.body.title;
+      existingTodo.description = req.body.description;
+      existingTodo.usersAttached = req.body.usersAttached;
+    } else {
+      // Create new todo
+      todoDoc.todos.push({
+        title: req.body.title,
+        description: req.body.description,
+        usersAttached: req.body.usersAttached,
+      });
+    }
 
     await todoDoc.save();
-
     res.json({ message: "Saved successfully" });
   } catch (err) {
     console.error("Save error:", err);
