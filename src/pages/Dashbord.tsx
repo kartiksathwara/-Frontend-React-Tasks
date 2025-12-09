@@ -1,8 +1,7 @@
-
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "./Header";
+import { FaArrowDown, FaArrowUp, FaClone, FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 
 type ListChild = { name: string; email: string; phone: string };
 type Todo = {
@@ -50,7 +49,6 @@ const Dashboard: React.FC = () => {
   };
 
   const handleClone = async (id: string) => {
-    // Navigate to TodoForm with cloneId
     navigate(`/create-todo?cloneId=${id}`);
   };
 
@@ -85,103 +83,107 @@ const Dashboard: React.FC = () => {
       console.error("Reorder error:", err);
     }
   };
-
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
       <Header />
       <main className="ml-10 p-6">
         <div className="max-w-5xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold">My Todos</h1>
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-3xl font-bold">My Todos</h1>
+
             <button
               onClick={() => navigate("/create-todo")}
-              className="px-4 py-2 rounded bg-blue-600 text-white"
+              className="px-4 py-2 flex items-center rounded-xl bg-blue-600 text-white shadow-md hover:bg-blue-700 transition"
             >
-              + New Todo
+              <FaPlus />
+              <span className="ml-2"> New Todo </span>
             </button>
           </div>
 
           {todos.length === 0 ? (
-            <div className="bg-white dark:bg-gray-800 rounded p-6 shadow border dark:border-gray-700">
-              <p>No todos yet. Create one!</p>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow border dark:border-gray-700 text-center">
+              <p className="text-lg">No todos yet. Create one!</p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-6">
               {todos.map((todo, index) => (
                 <div
                   key={todo._id}
-                  className="bg-white dark:bg-gray-800 rounded p-4 shadow border dark:border-gray-700"
+                  className="relative bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border dark:border-gray-700 hover:shadow-2xl transition-all duration-200"
                 >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h2 className="text-xl font-semibold">{todo.title}</h2>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
+                  <div className="absolute top-4 right-4 flex gap-2">
+                    <button
+                      onClick={() => navigate(`/todo-form/${todo._id}`)}
+                      className="p-2 rounded-lg bg-yellow-500 text-white hover:bg-yellow-600 shadow"
+                      title="Edit"
+                    >
+                      <FaEdit />
+                    </button>
+
+                    <button
+                      onClick={() => handleClone(todo._id)}
+                      className="p-2 rounded-lg bg-green-600 text-white hover:bg-green-700 shadow"
+                      title="Clone"
+                    >
+                      <FaClone />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(todo._id)}
+                      className="p-2 rounded-lg bg-red-500 text-white hover:bg-red-600 shadow"
+                      title="Delete"
+                    >
+                      <FaTrash />
+                    </button>
+                  </div>
+                  <div className="flex items-start gap-5">
+                    <div className="flex flex-col gap-32 mt-2">
+                      <button
+                        onClick={() => handleReorder(index, index - 1)}
+                        className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 shadow"
+                        disabled={index === 0}
+                        title="Move Up"
+                      >
+                        <FaArrowUp />
+                      </button>
+
+                      <button
+                        onClick={() => handleReorder(index, index + 1)}
+                        className="p-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 shadow"
+                        disabled={index === todos.length - 1}
+                        title="Move Down"
+                      >
+                        <FaArrowDown />
+                      </button>
+                    </div>
+
+                    <div className="flex-1">
+                      <h2 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">
+                        {todo.title}
+                      </h2>
+
+                      <p className="text-gray-700 dark:text-gray-300 mb-3 text-lg leading-relaxed">
                         {todo.description}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1">
+
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
                         Created: {new Date(todo.createdAt).toLocaleString()}
                       </p>
 
-                      <div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {todo.usersAttached.map((child, i) => (
                           <div
                             key={i}
-                            className="p-3 border rounded dark:border-gray-700 bg-gray-50 dark:bg-gray-900"
+                            className="p-4 rounded-xl border dark:border-gray-700 bg-gray-50 dark:bg-gray-900 shadow-sm"
                           >
-                            <p className="font-medium">{child.name}</p>
-                            <p className="text-sm">{child.email}</p>
-                            <p className="text-sm">{child.phone}</p>
+                            <p className="font-semibold text-lg">{child.name}</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-300">
+                              {child.email}
+                            </p>
+                            <p className="text-sm text-gray-600 dark:text-gray-300">
+                              {child.phone}
+                            </p>
                           </div>
                         ))}
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col gap-2 ml-4">
-                      <button
-                        onClick={() =>
-                          navigator.clipboard?.writeText(JSON.stringify(todo))
-                        }
-                        className="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700"
-                      >
-                        Copy
-                      </button>
-
-                      <button
-                        onClick={() => navigate(`/todo-form/${todo._id}`)}
-                        className="px-3 py-1 rounded bg-yellow-500 text-white"
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        onClick={() => handleClone(todo._id)}
-                        className="px-3 py-1 rounded bg-green-600 text-white"
-                      >
-                        Clone
-                      </button>
-
-                      <button
-                        onClick={() => handleDelete(todo._id)}
-                        className="px-3 py-1 rounded bg-red-500 text-white"
-                      >
-                        Delete
-                      </button>
-
-                      <div className="flex gap-1 mt-2">
-                        <button
-                          onClick={() => handleReorder(index, index - 1)}
-                          className="px-2 py-1 rounded bg-gray-300 dark:bg-gray-700"
-                          disabled={index === 0}
-                        >
-                          ↑
-                        </button>
-                        <button
-                          onClick={() => handleReorder(index, index + 1)}
-                          className="px-2 py-1 rounded bg-gray-300 dark:bg-gray-700"
-                          disabled={index === todos.length - 1}
-                        >
-                          ↓
-                        </button>
                       </div>
                     </div>
                   </div>

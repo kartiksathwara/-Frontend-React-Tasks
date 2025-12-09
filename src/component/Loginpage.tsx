@@ -23,6 +23,7 @@ const Login = () => {
 
       login(data.user, data.token);
 
+
       navigate("/home");
     } catch (err: any) {
       alert(err.response?.data?.message || "Login failed");

@@ -68,7 +68,6 @@ export const saveTodo = async (req, res) => {
     }
 
     if (req.body.id) {
-      // Update existing todo
       const existingTodo = todoDoc.todos.id(req.body.id);
       if (!existingTodo) return res.status(404).json({ message: "Todo not found" });
 
@@ -76,7 +75,6 @@ export const saveTodo = async (req, res) => {
       existingTodo.description = req.body.description;
       existingTodo.usersAttached = req.body.usersAttached;
     } else {
-      // Create new todo
       todoDoc.todos.push({
         title: req.body.title,
         description: req.body.description,
