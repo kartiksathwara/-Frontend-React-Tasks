@@ -2,7 +2,7 @@ export const PHONE_PREFIX = "+91";
 export const sanitizePhone = (value: string) => {
   return value.replace(/[^\d+]/g, "");
 };
-export const ensurePlus91 = (value: string) => {
+export const Plus91 = (value: string) => {
   let v = sanitizePhone(value);
   if (/^0\d{10}$/.test(v)) {
     v = v.slice(1);
@@ -19,6 +19,6 @@ export const ensurePlus91 = (value: string) => {
   return v;
 };
 export const isValidIndianPhone = (value: string) => {
-  const normalized = ensurePlus91(value);
+  const normalized = Plus91(value);
   return /^\+91[1-9]\d{9}$/.test(normalized);
 };
