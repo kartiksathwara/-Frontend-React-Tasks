@@ -1,17 +1,16 @@
 import { FaMoon, FaSun, FaUser, FaAngleDown, FaBars } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
 import { useTheme } from "../hooks/useTheam";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Sidebar from "../component/Sidebar";
 const Header = () => {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
-
   const [menuOpen, setMenuOpen] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false); // ⬅️ Sidebar state
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const token = localStorage.getItem("token");
 
-  const token = localStorage.getItem("token"); // check login
-
+  const menuClose = useRef<HTMLDivElement | null>(null);
   const handleUserClick = () => {
     if (!token) {
       navigate("/login");
@@ -26,6 +25,19 @@ const Header = () => {
     window.location.href = "/";
   };
 
+
+  useEffect(() => {
+    const handleClose = (event: MouseEvent) => {
+      if (!menuClose.current) return;
+      const target = event.target as Node;
+      if (!menuClose.current.contains(target)) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClose);
+    return () => document.removeEventListener("mousedown", handleClose);
+  }, []);
   return (
     <>
       <header className="bg-white dark:bg-gray-900 text-black dark:text-white w-full py-4 px-8 flex justify-between items-center shadow-lg transition">
@@ -43,7 +55,7 @@ const Header = () => {
           </Link>
 
         </div>
-        <div className="flex items-center gap-5 relative">
+        <div className="flex items-center gap-5 relative" ref={menuClose}>
           <button
             onClick={toggleTheme}
             className="text-xl hover:opacity-70 transition"
