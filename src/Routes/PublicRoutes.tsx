@@ -9,5 +9,3 @@ const PublicRoutes = ({ children, isAuth }: { children: React.ReactNode, isAuth:
 };
 
 export default PublicRoutes;
-
-

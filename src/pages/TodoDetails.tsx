@@ -26,7 +26,6 @@ const TodoDetails = () => {
     }
   }, [id, todoData]);
 
-  // ------- VALIDATION -------
   const validate = (): boolean => {
     const errs: { [key: string]: string } = {};
     if (!todo.title.trim()) errs.title = "Title is required";
@@ -35,17 +34,16 @@ const TodoDetails = () => {
     if (!todo.usersAttached.length) errs.usersAttached = "Add at least one user";
     if (todo.usersAttached.length > 4) errs.usersAttached = "Maximum 4 users allowed";
 
-    todo.usersAttached.forEach((u, idx) => {
-      if (!u.name.trim()) errs[`user_name_${idx}`] = "Name is required";
-      if (!/^\S+@\S+\.\S+$/.test(u.email)) errs[`user_email_${idx}`] = "Invalid email";
-      if (!/^[6-9]\d{9}$/.test(u.phone)) errs[`user_phone_${idx}`] = "Invalid Indian phone";
+    todo.usersAttached.forEach((u, id) => {
+      if (!u.name.trim()) errs[`user_name_${id}`] = "Name is required";
+      if (!/^\S+@\S+\.\S+$/.test(u.email)) errs[`user_email_${id}`] = "Invalid email";
+      if (!/^[6-9]\d{9}$/.test(u.phone)) errs[`user_phone_${id}`] = "Invalid Indian phone";
     });
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
 
-  // ------- HANDLE SAVE -------
   const handleSave = async () => {
     if (!validate()) return;
     try {
@@ -58,7 +56,6 @@ const TodoDetails = () => {
     }
   };
 
-  // ------- HANDLE CLONE -------
   const handleClone = () => {
     const clone = {
       ...todo,
@@ -67,23 +64,20 @@ const TodoDetails = () => {
     setTodo(clone);
   };
 
-  // ------- ADD USER -------
   const addUser = () => {
     if (todo.usersAttached.length >= 4) return;
     setTodo({ ...todo, usersAttached: [...todo.usersAttached, initialUser] });
   };
 
-  // ------- UPDATE USER -------
-  const updateUser = (idx: number, field: keyof UserAttached, value: string) => {
+  const updateUser = (id: number, field: keyof UserAttached, value: string) => {
     const users = [...todo.usersAttached];
-    users[idx][field] = value;
+    users[id][field] = value;
     setTodo({ ...todo, usersAttached: users });
   };
 
-  // ------- REMOVE USER -------
-  const removeUser = (idx: number) => {
+  const removeUser = (id: number) => {
     const users = [...todo.usersAttached];
-    users.splice(idx, 1);
+    users.splice(id, 1);
     setTodo({ ...todo, usersAttached: users });
   };
 
@@ -111,32 +105,32 @@ const TodoDetails = () => {
       <h3>Users Attached</h3>
       {errors.usersAttached && <span style={{ color: "red" }}>{errors.usersAttached}</span>}
 
-      {todo.usersAttached.map((user, idx) => (
-        <div key={idx} style={{ marginBottom: "10px", border: "1px solid gray", padding: "5px" }}>
+      {todo.usersAttached.map((user, id) => (
+        <div key={id} style={{ marginBottom: "10px", border: "1px solid gray", padding: "5px" }}>
           <input
             placeholder="Name"
             value={user.name}
-            onChange={(e) => updateUser(idx, "name", e.target.value)}
+            onChange={(e) => updateUser(id, "name", e.target.value)}
           />
-          {errors[`user_name_${idx}`] && <span style={{ color: "red" }}>{errors[`user_name_${idx}`]}</span>}
+          {errors[`user_name_${id}`] && <span style={{ color: "red" }}>{errors[`user_name_${id}`]}</span>}
           <input
             placeholder="Email"
             value={user.email}
-            onChange={(e) => updateUser(idx, "email", e.target.value)}
+            onChange={(e) => updateUser(id, "email", e.target.value)}
           />
-          {errors[`user_email_${idx}`] && <span style={{ color: "red" }}>{errors[`user_email_${idx}`]}</span>}
+          {errors[`user_email_${id}`] && <span style={{ color: "red" }}>{errors[`user_email_${id}`]}</span>}
           <input
             placeholder="Phone"
             value={user.phone}
-            onChange={(e) => updateUser(idx, "phone", e.target.value)}
+            onChange={(e) => updateUser(id, "phone", e.target.value)}
           />
-          {errors[`user_phone_${idx}`] && <span style={{ color: "red" }}>{errors[`user_phone_${idx}`]}</span>}
+          {errors[`user_phone_${id}`] && <span style={{ color: "red" }}>{errors[`user_phone_${id}`]}</span>}
           <input
             type="date"
             value={user.date}
-            onChange={(e) => updateUser(idx, "date", e.target.value)}
+            onChange={(e) => updateUser(id, "date", e.target.value)}
           />
-          <button onClick={() => removeUser(idx)}>Remove</button>
+          <button onClick={() => removeUser(id)}>Remove</button>
         </div>
       ))}
 

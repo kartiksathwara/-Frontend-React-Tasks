@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 
-interface UseDataFetchParams<T> {
-  initState: T;
-  fetchFn: () => Promise<T>;
+interface UseDataFetchParams {
+  initState: any;
+  fetchFn: () => Promise<any>;
   disableAutoFetch?: boolean;
 }
 
-export default function useDataFetch<T>({
+export default function useDataFetch({
   initState,
   fetchFn,
   disableAutoFetch = false,
-}: UseDataFetchParams<T>) {
-  const [data, setData] = useState<T>(initState);
+}: UseDataFetchParams) {
+  const [data, setData] = useState<any>(initState);
   const [isFetching, setIsFetching] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);

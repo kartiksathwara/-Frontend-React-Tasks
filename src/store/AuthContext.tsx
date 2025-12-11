@@ -1,11 +1,5 @@
-
-
-
 import { createContext, useState} from "react";
 import type { ReactNode } from "react";
-
-
-
 export type User = {
     id: string;
     name: string;

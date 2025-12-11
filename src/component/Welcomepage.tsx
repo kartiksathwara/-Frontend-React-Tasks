@@ -102,12 +102,9 @@ const Welcome: React.FC = () => {
                 Reorder, edit, clone, or delete tasks.
               </p>
             </div>
-
           </div>
         </div>
-
         <Footer />
-
       </div>
     </>
   );

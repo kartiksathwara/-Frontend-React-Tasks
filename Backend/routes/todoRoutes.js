@@ -14,7 +14,7 @@ const router = express.Router();
 router.get("/", auth, getTodoList);
 router.get("/:id", auth, getTodoDetails);
 router.post("/save", auth, saveTodo);
-router.put("/save/:id", auth, saveTodo); // update route
+router.put("/save/:id", auth, saveTodo); 
 router.delete("/:id", auth, deleteTodo);
 router.post("/clone/:id", auth, cloneTodo);
 router.post("/reorder", auth, reorderTodo);

@@ -64,9 +64,7 @@ const Register = () => {
               type="text"
               name="name"
               placeholder="Enter Name"
-              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600
-                         rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white 
-                         focus:border-teal-500 dark:focus:border-teal-400 outline-none transition"
+              className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:border-teal-500 dark:focus:border-teal-400 outline-none transition"
               value={formData.name}
               onChange={handleChange}
               required
@@ -76,9 +74,7 @@ const Register = () => {
                 type="email"
                 name="email"
                 placeholder="Enter Email"
-                className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600
-                           rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white 
-                           focus:border-teal-500 dark:focus:border-teal-400 outline-none transition"
+                className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:border-teal-500 dark:focus:border-teal-400 outline-none transition"
                 value={formData.email}
                 onChange={handleChange}
                 required
@@ -93,9 +89,7 @@ const Register = () => {
                 type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Enter Password"
-                className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600
-               rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white 
-               focus:border-teal-500 dark:focus:border-teal-400 outline-none transition"
+                className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:border-teal-500 dark:focus:border-teal-400 outline-none transition"
                 value={formData.password}
                 onChange={handleChange}
                 required
@@ -121,9 +115,7 @@ const Register = () => {
                 type={showConfirm ? "text" : "password"}
                 name="confirmPassword"
                 placeholder="Confirm Password"
-                className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600
-               rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white 
-               focus:border-teal-500 dark:focus:border-teal-400 outline-none transition"
+                className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white  focus:border-teal-500 dark:focus:border-teal-400 outline-none transition"
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
